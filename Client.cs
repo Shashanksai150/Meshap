@@ -3,13 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace meshap
 {
-
     internal class Client
     {
+
+        #region CLient class fields, constructor & properties
         string Userid { get; set; }
         string Pd { get; set; }
         string Name { get; set; }
@@ -22,7 +24,8 @@ namespace meshap
             this.number = number;
             
         }
-
+        #endregion
+        
         meminterface ds = new DataStorage();
 
         #region Contacts
@@ -68,7 +71,7 @@ namespace meshap
         }
 
         
-        public bool Contdel(ulong num)
+        public bool Contdel(int num)
         {
             if (ds.delContacts(num))
             { return true; }
@@ -87,23 +90,21 @@ namespace meshap
         #endregion
 
         #region Send and receive messages
-        public bool sendmsg(Server s, Client fc, Client tc, String msg)
+        public bool sendmsg(Server s, Client fc, Client tc, String msg , int pb)
         {
-            //Send msg
-            //s.receivemsg(s, tc, fc, msg);
-            Console.WriteLine( fc.number + " : " + msg);
-            ds.chat_history(fc.number , true ,msg);
+            //Sending message and creating a new thread to save the chat history            
+            Console.WriteLine( fc.number + " : " + msg);           
+            //new Thread(ds.chat_history).Start();
+            ds.chat_history(pb, true, msg);
             return true;
         }
 
-        public bool receivemsg(Server s ,Client fc, Client tc , String msg)
+        public bool receivemsg(Server s ,Client fc, Client tc , String msg,int pb)
         {
-            //fc.sendmsg(s, tc, fc ,msg);
-
+            //Receiving message and creating a new thread to save the chat history
             Console.WriteLine( tc.number + " : " + msg);
-            
-            ds.chat_history( fc.number , msg);
-
+            //new Thread(ds.chat_history).Start();
+            ds.chat_history( pb , msg);
             return true;
         }
 
@@ -111,6 +112,13 @@ namespace meshap
         #endregion
 
         #region Group chat related
+        public void Creategrp(int num)
+        {
+            //grp creation
+            ArrayList grpn = new ArrayList();           
+            grpn.Add(num);
+        }
+
         public void Creategrp(ulong num)
         {
             //grp creation
@@ -119,5 +127,6 @@ namespace meshap
         }
 
         #endregion
+
     }
 }

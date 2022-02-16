@@ -11,28 +11,30 @@ namespace meshap
 {
     internal class DataStorage : meminterface
     {
+        DateTime dt = DateTime.Now;
+
         #region client1 user data
         static string Userid = "GSS@150";
         static string Pd = "GSS143150";
         static string Name = "GSS";
         static ulong number = 1445552204;
 
-        String directory = @"D:\meshap";
-        static String Contactsdir = @"D:\meshap\Contactsdir\Contactsdir.bin";
-        static String num1hist = @"D:\meshap\history\num1.txt";
-        static String num2hist = @"D:\meshap\history\num2.txt";
-        static String num3hist = @"D:\meshap\history\num3.txt";
-        static String num4hist = @"D:\meshap\history\num4.txt";
-        static String num5hist = @"D:\meshap\history\num5.txt";
+        String directory = @"D:\Meshap";
+        static String Contactsdir = @"D:\Meshap\Contactsdir\Contactsdir.bin";
+        static String num1hist = @"D:\Meshap\history\num1.txt";
+        static String num2hist = @"D:\Meshap\history\num2.txt";
+        static String num3hist = @"D:\Meshap\history\num3.txt";
+        static String num4hist = @"D:\Meshap\history\num4.txt";
+        static String num5hist = @"D:\Meshap\history\num5.txt";
         
 
         static public Dictionary<int, ArrayList> Phonecont = new Dictionary<int, ArrayList>()
             {
-                { 1 , new ArrayList(){ 1425552251, "GSS" , @"D:\meshap\history\num1.txt" } },
-                { 2 , new ArrayList(){ 1425552252, "RAM", @"D:\meshap\history\num2.txt" } },
-                { 3 , new ArrayList(){ 1425552253, "RAJ", @"D:\meshap\history\num3.txt" } },
-                { 4 , new ArrayList(){ 1425552254, "MANU", @"D:\meshap\history\num4.txt" } },
-                { 5 , new ArrayList(){ 1425552255, "SONY", @"D:\meshap\history\num5.txt" } }
+                { 1 , new ArrayList(){ 1425552251, "GSS" , @"D:\Meshap\history\num1.txt" } },
+                { 2 , new ArrayList(){ 1425552252, "RAM", @"D:\Meshap\history\num2.txt" } },
+                { 3 , new ArrayList(){ 1425552253, "RAJ", @"D:\Meshap\history\num3.txt" } },
+                { 4 , new ArrayList(){ 1425552254, "MANU", @"D:\Meshap\history\num4.txt" } },
+                { 5 , new ArrayList(){ 1425552255, "SONY", @"D:\Meshap\history\num5.txt" } }
             };
 
         //public Dictionary<, ArrayList> History = new Dictionary<string, ArrayList>()
@@ -72,16 +74,16 @@ namespace meshap
         }
 
 
-        public bool delContacts(ulong num)
+        public bool delContacts(int num)
         {
-            Dictionary<ulong, ArrayList> Phonecont;
+            Dictionary<int, ArrayList> Phonecont;
             //ArrayList c = new ArrayList();
             BinaryFormatter serializer = new BinaryFormatter();
             BinaryFormatter deserializer = new BinaryFormatter();
             if (File.Exists(Contactsdir))
             {
                 Stream openf = File.OpenWrite(Contactsdir);
-                Phonecont = (Dictionary<ulong, ArrayList>)deserializer.Deserialize(openf);
+                Phonecont = (Dictionary<int, ArrayList>)deserializer.Deserialize(openf);
                 //openf.Close();
 
                 Phonecont.Remove(num);
@@ -112,7 +114,7 @@ namespace meshap
                 c.Add(dir + Name + ".txt");
                 int count = Phonecont.Count + 1;
                 Phonecont.Add(count, c);
-                StreamWriter openf1 = File.AppendText(Contactsdir);
+                Stream openf1 = File.OpenWrite(Contactsdir);
                 serializer.Serialize(openf1, Phonecont);
 
                 openf.Close();
@@ -146,36 +148,54 @@ namespace meshap
         #endregion
 
         #region Chat history and imp
-        public void chat_history(ulong num, string msg)
+        public void chat_history(int num, bool me, string msg)
         {
-            string Path = num1hist;// (string) Phonecont[num][1];
-            if (!File.Exists(Path))
+            string Path = (string)Phonecont[num][2];
+            if (File.Exists(Path))
             {
-                using (StreamWriter sr = File.AppendText(Path))
-                {
-                    sr.Write(num + " : ");
-                    sr.WriteLine(msg);
-                }
-            }                      
-        }
-
-        public void chat_history(ulong num, bool me,string msg)
-        {
-
-            string Path = num1hist;// (string)(Phonecont[num][1]);
-            if (!File.Exists(Path))
+                string line;
+                StreamReader sr = File.OpenText(Path);
+               
+                line = sr.ReadLine();
+                sr.Close();
+                string s = line + $"\n[ {dt} ] \n {Phonecont[num][1]} : {msg}";
+                File.AppendAllText(Path, s);
+                
+            }
+            else
             {
-                using (StreamWriter sr = File.AppendText(Path))
-                {
-                    sr.Write(DataStorage.number + " : ");
-                    sr.WriteLine(msg);
-                }
+                string s = $"\n[ {dt} ] \n {Phonecont[num][1]} : {msg}";
+                File.AppendAllText(Path, s);
             }
         }
 
-        public void Gethistory(ulong num)
+        public void chat_history(int num, string msg)
         {
-            string Path = num1hist; //(string)(Phonecont[num][1]);
+
+            string Path = (string)(Phonecont[num][2]);
+            if (File.Exists(Path))
+            {
+                string line;
+                StreamReader sr = File.OpenText(Path);
+               
+                line = sr.ReadLine();
+                sr.Close();
+                string s = line + $"\n[ {dt} ] \n Me : {msg}";
+                File.AppendAllText(Path, s);
+                
+            }
+            else
+            {
+                string s = $"\n[ {dt} ] \n Me : {msg}";
+                File.AppendAllText(Path, s);
+            }
+
+            
+        }
+
+        public void Gethistory(int num)
+        {
+            string Path = (string)(Phonecont[num][2]);
             using (StreamReader sr = File.OpenText(Path))
             {
                 string line;

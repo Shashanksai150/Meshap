@@ -12,7 +12,9 @@ namespace meshap
     
     internal class Server 
     {
+     
         meminterface ds = new DataStorage();
+
         #region Server data
         static String Clientdir = @"D:\meshap\Server\Clients.bin";
 
@@ -144,20 +146,20 @@ namespace meshap
         #endregion
 
         #region Send and receive message block
-        public void sendmsg(Server s ,Client fc, Client tc , String msg)
+        public void sendmsg(Server s ,Client fc, Client tc , String msg, int pb)
         {
             //Send msg
             
-            tc.receivemsg(s, fc , tc , msg);
+            tc.receivemsg(s, fc , tc , msg, pb);
 
             //Console.WriteLine(msg);
             //return true;
         }
 
 
-        public void receivemsg(Server s, Client fc, Client tc , string msg )
+        public void receivemsg(Server s, Client fc, Client tc , string msg ,int pb)
         {
-            tc.sendmsg(s ,tc ,fc , msg);
+            tc.sendmsg(s ,tc ,fc , msg,pb);
             
         }
 
@@ -180,5 +182,6 @@ namespace meshap
         //    }
         //}
         #endregion
+    
     }
 }

@@ -7,65 +7,90 @@ using System.Threading.Tasks;
 
 namespace meshap
 {
-    
+    enum funcmenu 
+    {
+        Add_Contact = 1,
+        Messaging,
+        Opening_history,
+        Get_Contacts,
+        del_contacts,
+        Groupcreation
+    }
+
     internal class Program
     {
         # region Menu Function
         public static void functions(Server s, Client c, string id ,bool b)
         {
             meminterface ds = new DataStorage();
-            if (!(b)) { return; }
+            if (!b) { return; }
             Console.WriteLine("Menu : ");
             int f = int.Parse(Console.ReadLine());
             switch (f)
             {
-                case 0:
+                case (int)funcmenu.Add_Contact:
                     // To ADD contact
                     Console.WriteLine("Enter number and next name : ");
                     ulong p1 = ulong.Parse(Console.ReadLine());
                     var n1 = Console.ReadLine();
                     var n2 = Console.ReadLine();
                     s.AddContacts(p1,n1,n2, C: c);
-
                     break;
 
-
-                case 1:
+                case (int)funcmenu.Messaging:
                     // To send msg
+                    ds.Contactslist();
                     Console.WriteLine("Select contact : ");
-                    var pb = ulong.Parse(Console.ReadLine());
-                    Dictionary<ulong , ArrayList> dictph = (Dictionary<ulong, ArrayList>)s.Clients[id][3];
+                    var pb = int.Parse(Console.ReadLine());
+                    Dictionary<int , ArrayList> dictph = (Dictionary<int, ArrayList>)s.Clients[id][3];
+                    
                     var num = Convert.ToUInt64(dictph[pb][0]);
                     Client c1 = new Client(num);
                     c1.number = c.number;
                     Console.WriteLine("client 1 message: ");
                     var m1 = Console.ReadLine();
-                    s.sendmsg(s, c, c1 , m1);
-                    s.receivemsg(s, c1, c , m1);
+                    
+                    s.sendmsg(s, c, c1 , m1, pb);
+                    s.receivemsg(s, c1, c , m1,pb);
 
                     Console.WriteLine("client 2 message: ");
                     var m2 = Console.ReadLine();
-                    s.sendmsg(s, c1, c, m2);
-                    s.receivemsg(s , c, c1, m2);
+                    
+                    s.sendmsg(s, c1, c, m2, pb);
+                    s.receivemsg(s , c, c1, m2, pb);
                     break;
                
-                case 2:
-                    
-                    ds.Gethistory(c.number);
+                case (int)funcmenu.Opening_history:
+                    Console.WriteLine("Select contact : ");
+                    var cs = int.Parse(Console.ReadLine());
+                    ds.Gethistory(cs);
                     break;
-                case 3:
+                
+                case (int)funcmenu.Get_Contacts:
                     ds.Contactslist();
                     break;
 
+                case (int)funcmenu.del_contacts:
+                    Console.WriteLine("Select contact : ");
+                    var cs1 = int.Parse(Console.ReadLine());
+                    ds.delContacts(cs1);
+                    break;
+
+                case (int)funcmenu.Groupcreation:
+                    Console.WriteLine("Select contact : ");
+                    var cs2 = ulong.Parse(Console.ReadLine());
+                    c.Creategrp(cs2);
+                    break;
             }
         }
         #endregion
         
         static void Main(string[] args)
         {
-            #region opening App
+            //#region opening App
             Console.WriteLine("TO Start App press y and to close q");
             bool op = 'y' == Console.ReadKey().KeyChar;
+            
             while (op)
             {
                 #region login / registration
@@ -118,7 +143,7 @@ namespace meshap
                         break;
                         #endregion
             }
-            #endregion
+            //#endregion
                 //switch (s) 
                 //{
                 //    case 0:

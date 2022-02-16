@@ -9,20 +9,20 @@ namespace meshap
     internal interface meminterface
     {
         
-
         void continfo(int num);
 
-        bool delContacts(ulong num);
+        bool delContacts(int num);
 
         bool AddContacts(ulong pnum, String Name, string path);
 
         void Contactslist();
 
-        void chat_history(ulong num, string msg);
+        void chat_history(int num, string msg);
 
-        void chat_history(ulong num, bool me, string msg);
+        void chat_history(int num, bool me, string msg);
 
-        void Gethistory(ulong num);
+        void Gethistory(int num);
+
     }
 
 }
